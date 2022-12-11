@@ -30,39 +30,3 @@ plot(X, y, seriestype=:scatter, label="data", title="Ridge Regression")
 plot!(X, y_pred, label="regression line")
 xlabel!("x")
 ylabel!("y")
-
-# Median filter for RGB image
-function median_filter(img::Array{Float64, 3}, k::Int)
-    # Get the size of the image
-    m, n, c = size(img)
-    # Create a new image
-    img_new = zeros(m, n, c)
-    # Loop over the image
-    for i in 1:m
-        for j in 1:n
-            for l in 1:c
-                # Get the window
-                window = img[max(1, i-k):min(m, i+k), max(1, j-k):min(n, j+k), l]
-                # Get the median
-                img_new[i, j, l] = median(vec(window))
-            end
-        end
-    end
-    img_new
-end
-
-# function calculating the median of an Array
-function median(arr::Array{Float64, 1})
-    # Sort the array
-    arr = sort(arr, Dims=1)
-    # Get the length of the array
-    n = length(arr)
-    # Check if the length is even or odd
-    if iseven(n)
-        # If even, return the average of the two middle elements
-        (arr[n÷2] + arr[n÷2+1])/2
-    else
-        # If odd, return the middle element
-        arr[n÷2+1]
-    end
-end
