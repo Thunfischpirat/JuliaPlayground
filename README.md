@@ -1,2 +1,2 @@
 # JuliaPlayground
-Repository used to learn the Julia programming language.
+Repository used for the code I'm writing while learning the Julia language.
