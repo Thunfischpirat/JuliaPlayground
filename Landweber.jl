@@ -4,19 +4,28 @@ using Plots
 
 Random.seed!(1234)
 
-# 20x1 Matrix as dummy data.
-X = rand(200,10) .+ 1
-weight = ones(10,1)
+# Generate 200x10 random matrix with integers between 0 and 10.
+X = rand(collect(0:10), 200, 10) / 20
+# Make sure that X has a non-trivial nullspace.
+X[:,1] = ones(200)
+X[:,2] = -ones(200)
+
 # Add some noise to the data
-y = vec(3*X*weight + 0*rand(200, 1))
+error_strength = 0
+y = vec(3*X*ones(10,1) + error_strength*rand(200, 1))
 
 # Obtain singular values of X
-sigma = maximum(svd(X).S)
+singular_values = svd(X).S
+sigma = maximum(singular_values)
 
 
-function Landweber(X, y, beta, max_iter=100, tol=1e-4)
-    # Initialize w
-    w = zeros(size(X, 2))
+function Landweber(X, y, beta, initial_w="zeros", max_iter=1000, tol=1e-4)
+    # Initialize w either as the zero vector or as an arbitrary vector from R^10.
+    if initial_w == "zeros"
+        w = zeros(size(X, 2))
+    else
+       w = initial_w
+    end
     # Initialize error
     error = Inf
     # Initialize iteration counter
@@ -40,18 +49,43 @@ function Landweber(X, y, beta, max_iter=100, tol=1e-4)
     return w, error_vec
 end
 
-# Range for which 
 
-# Plot error_vec for different multiples of sigma
-pt = plot(title="Landweber-Iteration", xlabel="Iteration", ylabel="Error")
-for β in [0.25, 0.5,  1, 1.25] * 1/sigma^2
-    w, error_vec = Landweber(X, y, β)
-    plot!(pt, error_vec, label="β = $(round(β, digits=5))")
+## Plot error_vec for different multiples of sigma
+pt = plot(title="Landweber-Iteration (σ≈$(round(sigma, digits=2)))", xlabel="Iteration", ylabel="Error")
+for b in [0.25, 0.5,  1, 1.25, 2] 
+    w, error_vec = Landweber(X, y, b*1/sigma^2)
+    plot!(pt, error_vec, label="β = $(b)1/σ²")
 end
-
+# Show plots
 display(pt)
 
+## Verify convergence of Landweber when the initial w is the zero vector.
+# Moore-Penrose Pseudoinverse of X
+X_pinv = pinv(X) 
 
+# Calculate w using Moore-Penrose Pseudoinverse
+w_pinv = X_pinv*y
 
+# Calculate w using Landweber
+w_landweber, _ = Landweber(X, y, 1/sigma^2)
 
+print("Compare w using Moore-Penrose Pseudoinverse and Landweber:\n")
+print("w_theo = $(w_pinv)\n")
+print("w_landweber = $(w_landweber)\n")
 
+## Verify convergence of Landweber when the initial w is an arbitrary vector from R^10.
+# Initialize w
+w = rand(10)
+# Project w onto the nullspace of X
+X_null = nullspace(X)
+w_proj = X_null*inv(X_null'*X_null)*X_null'*w
+
+# Calculate w using Landweber
+w_landweber, _ = Landweber(X, y, 1/sigma^2, w)
+
+# Theoretical value of w
+w_theo = X_pinv*y + w_proj
+
+print("Compare w using Landweber and Moore-Penrose plus nullspace projection:\n")
+print("w_theo = $(w_theo)\n")
+print("w_landweber = $(w_landweber)")
