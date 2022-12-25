@@ -110,7 +110,8 @@ end
 train_mse = []
 test_mse = []
 weights = []
-for λ in [0., 0.1, 0.3, 0.5, 1., 1.5, 2., 2.5, 3., 3.5, 4., 4.5, 5., 5.5, 6.]
+lambdas =  [0., 0.1, 0.3, 0.5, 1., 1.5, 2., 2.5, 3., 3.5, 4., 4.5, 5., 5.5, 6.]
+for λ in lambdas
     # Training
     local model = fit(LassoRegression(), X, y, λ)
     local y_pred = predict(model, X)
@@ -128,21 +129,23 @@ end
 
 
 # Plot MSE of the model on the training data and the test data for different values of λ.
-p1 = scatter([train_mse, test_mse],
+p1 = scatter(lambdas,
+        [train_mse, test_mse],
         label=["train_mse" "test_mse"],
         xlabel="λ",
         ylabel="MSE",
         title="Training MSE for different values of λ",
         legend=:topright)
 # https://github.com/JuliaPlots/Plots.jl/issues/140
-plot!([train_mse, test_mse], label="")
+plot!(lambdas, [train_mse, test_mse], label="")
 
 # Plot weights for different values of λ.
 # https://discourse.julialang.org/t/how-to-convert-vector-of-vectors-to-matrix/72609/4
 weights = reduce(hcat, weights)'
-p2 = scatter(weights,
+p2 = scatter(lambdas,
+        weights,
         label=[ "lcavol" "lweight" "age" "lbph" "svi" "lcp" "gleason" "pgg45"],
-        xlabel="Coefficient",
+        xlabel="λ",
         ylabel="Weight",
         title="Weights for different values of λ",
         legend=:topright)
@@ -150,7 +153,7 @@ p2 = scatter(weights,
 # Display plots side by side.
 # https://stackoverflow.com/questions/49168872/increase-space-between-subplots-in-plots-jl
 l = @layout [a b] 
-plot(p1, p2, layout=l, size=(1000, 500), bottom_margin=3*Plots.mm)
+plot(p1, p2, layout=l, size=(1000, 500), bottom_margin=3*Plots.mm, left_margin=4*Plots.mm)
 
 
 
