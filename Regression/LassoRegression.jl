@@ -5,10 +5,6 @@ using Parameters
 using LinearAlgebra
 using Statistics
 using Plots
-import Random
-
-# Set seed for reproducibility.
-Random.seed!(1234)
 
 # Load data (https://hastie.su.domains/ElemStatLearn/datasets/prostate.data)
 df = CSV.read("Data/ESL/prostate.txt", delim="\t", DataFrame)
@@ -18,6 +14,9 @@ df_train = df[df[:, end] .== true, :]
 # Get explanatory variables and response variable from df.
 X = Matrix(df_train[:, 2:end-2])
 y = df_train[:, end-1]
+mean_y = mean(y, dims=1)
+std_y = std(y, dims=1)
+y = (y .- mean_y) ./ std_y
 
 # https://stats.stackexchange.com/questions/287370/standardization-vs-normalization-for-lasso-ridge-regression
 mean_X = mean(X, dims=1)
@@ -29,6 +28,7 @@ df_test = df[df[:, end] .== false, :]
 X_test = Matrix(df_test[:, 2:end-2])
 X_test = (X_test .- mean_X)./std_X
 y_test = df_test[:, end-1]
+y_test = (y_test .- mean_y)./std_y
 
 
 # https://stackoverflow.com/questions/65945827/how-can-i-set-default-parameters-for-mutable-structs-in-julia
