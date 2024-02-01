@@ -48,7 +48,7 @@ plot(scatter(x=features[1,:], y=features[2,:], z=features[3,:],
 # Pass to dataloader for training.
 loader = Flux.DataLoader(features |> gpu, batchsize=16)
 
-train_model = false
+train_model = true
 
 if train_model
     # Encoder

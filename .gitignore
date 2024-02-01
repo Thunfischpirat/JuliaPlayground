@@ -35,3 +35,6 @@ Manifest.toml
 
 # All files in Data folder
 Data/
+
+# Books
+*.pdf
