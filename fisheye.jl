@@ -9,8 +9,8 @@ T = range(-4,4,100)
 M1 = map(t -> t + im/2, T)
 M2 = map(t -> -2 + t*im, T)
 
-M3 = map(θ -> 0.5*cos(θ) + im*sin(θ), φ)
-M4 = map(θ -> 0.5*cos(θ) + im*sin(θ) - 1, φ)
+M3 = map(θ -> 0.5*(cos(θ) + im*sin(θ)), φ)
+M4 = map(θ -> 0.5*(cos(θ) + im*sin(θ)) - 1, φ)
 
 # Define the transformation function
 f(z) = z / (abs(z) + 1)
