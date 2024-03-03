@@ -1,4 +1,4 @@
-### Various experiments to illustrate and verify the benefits of the Monte Carlo method
+### Various experiments to illustrate and verify the benefits of the Monte Carlo method.
 
 using Plots
 using Distributions
